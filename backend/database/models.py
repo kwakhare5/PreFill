@@ -1,0 +1,92 @@
+from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean, Text, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.orm import DeclarativeBase, relationship
+import uuid
+from datetime import datetime
+
+class Base(DeclarativeBase):
+    pass
+
+class Household(Base):
+    __tablename__ = "households"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(String(255), unique=True, nullable=False)
+    phone_number = Column(String(20))
+    composition = Column(String(50))           # solo, couple, family_small, family_large
+    composition_confidence = Column(Float)
+    intelligence_consent = Column(Boolean, default=False)
+    notifications_enabled = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    orders = relationship("Order", back_populates="household")
+
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"))
+    instamart_order_id = Column(String(255), unique=True)
+    placed_at = Column(DateTime(timezone=True), nullable=False)
+    total_amount = Column(Float)
+    raw_data = Column(JSONB)
+    household = relationship("Household", back_populates="orders")
+    items = relationship("OrderItem", back_populates="order")
+
+class OrderItem(Base):
+    __tablename__ = "order_items"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"))
+    item_id = Column(String(255), nullable=False)
+    item_name = Column(String(500), nullable=False)
+    category = Column(String(100))
+    quantity = Column(Integer)
+    unit = Column(String(50))
+    standard_quantity = Column(Float)          # normalized (500ml → 0.5L)
+    price = Column(Float)
+    order = relationship("Order", back_populates="items")
+
+class ConsumptionModel(Base):
+    __tablename__ = "consumption_models"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"))
+    item_id = Column(String(255))
+    item_name = Column(String(500))
+    category = Column(String(100))
+    avg_daily_consumption = Column(Float)
+    consumption_cycle_days = Column(Float)
+    last_purchase_date = Column(DateTime(timezone=True))
+    last_purchase_quantity = Column(Float)
+    estimated_depletion_date = Column(DateTime(timezone=True))
+    confidence_score = Column(Float)
+    data_points = Column(Integer)
+    is_anomaly_excluded = Column(Boolean, default=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+class RestockAlert(Base):
+    __tablename__ = "restock_alerts"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"))
+    item_ids = Column(JSONB)                   # list of item IDs in this alert
+    message_sent = Column(Text)
+    sent_at = Column(DateTime(timezone=True))
+    status = Column(String(50), default='pending')   # pending/sent/acted/dismissed
+    acted_at = Column(DateTime(timezone=True))
+    order_id_placed = Column(String(255))
+
+class PriceHistory(Base):
+    __tablename__ = "price_history"
+    # TimescaleDB hypertable — partitioned by recorded_at
+    item_id = Column(String(255), primary_key=True)
+    item_name = Column(String(500))
+    recorded_at = Column(DateTime(timezone=True), primary_key=True)
+    price = Column(Float)
+    price_per_unit = Column(Float)
+
+class Recipe(Base):
+    __tablename__ = "recipes"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"))
+    name = Column(String(500))
+    servings = Column(Integer)
+    ingredients = Column(JSONB)
+    cuisine = Column(String(100))
+    pinned_for = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
