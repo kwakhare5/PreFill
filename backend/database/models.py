@@ -64,12 +64,14 @@ class RestockAlert(Base):
     __tablename__ = "restock_alerts"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"))
-    item_ids = Column(JSONB)                   # list of item IDs in this alert
-    message_sent = Column(Text)
+    item_id = Column(String(255))                    # single item per alert (per CLAUDE.md spec)
+    item_name = Column(String(500))
+    alert_type = Column(String(50))                  # 'depletion_warning', 'price_dip', 'bundle_suggestion'
+    confidence = Column(Float)
+    message = Column(Text)
     sent_at = Column(DateTime(timezone=True))
     status = Column(String(50), default='pending')   # pending/sent/acted/dismissed
     acted_at = Column(DateTime(timezone=True))
-    order_id_placed = Column(String(255))
 
 class PriceHistory(Base):
     __tablename__ = "price_history"

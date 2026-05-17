@@ -134,6 +134,7 @@ class ConsumptionModeler:
                     results["skipped"] += 1
             except Exception as e:
                 logger.error(f"Error building model for {item['item_name']}: {e}")
+                await db.rollback()
                 results["errors"] += 1
                 
         await db.commit()
