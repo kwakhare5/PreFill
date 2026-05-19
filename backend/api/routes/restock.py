@@ -85,12 +85,11 @@ async def check_depletions_for_household(household_id: str, db: AsyncSession) ->
     recent_result = await db.execute(recent_stmt)
     recent_alerts = recent_result.scalars().all()
 
-    # item_ids is stored as a JSON list in RestockAlert
+    # item_id is a single string in RestockAlert (one row per SKU)
     recently_alerted_ids: set[str] = set()
     for alert in recent_alerts:
-        if alert.item_ids:
-            for item_id in alert.item_ids:
-                recently_alerted_ids.add(str(item_id))
+        if alert.item_id:
+            recently_alerted_ids.add(str(alert.item_id))
 
     # --- Step 3: filter and format -------------------------------------------
     depleting = []
@@ -165,23 +164,36 @@ async def trigger_restock_check(user_id: str, db: AsyncSession = Depends(get_db)
             'items':            [],
         }
 
-    # Persist a RestockAlert record so we can de-duplicate future checks
-    # and track whether the user eventually acted on it.
-    alert = RestockAlert(
-        household_id=household.id,
-        item_ids=[item['item_id'] for item in items],
-        sent_at=datetime.now(timezone.utc),
-        status='pending',
-    )
-    db.add(alert)
+    # Write one RestockAlert per depleting item (schema: single item_id/item_name)
+    # Why one-per-item: lets us track acted/dismissed status independently per SKU.
+    now = datetime.now(timezone.utc)
+    alert_ids: list[str] = []
+
+    for item in items:
+        alert = RestockAlert(
+            household_id=household.id,
+            item_id=item['item_id'],
+            item_name=item['item_name'],
+            alert_type='depletion_warning',
+            confidence=item['confidence_score'],
+            message=(
+                f"{item['item_name']} will run out in ~{item['days_remaining']:.1f} days "
+                f"(confidence: {item['confidence_label']})."
+            ),
+            sent_at=now,
+            status='pending',
+        )
+        db.add(alert)
+        await db.flush()  # get ID before commit
+        alert_ids.append(str(alert.id))
+
     await db.commit()
-    await db.refresh(alert)
 
     return {
         'alerts_triggered': len(items),
-        'alert_id':         str(alert.id),
+        'alert_ids':        alert_ids,
         'message':          f'{len(items)} item(s) depleting within {settings.ALERT_THRESHOLD_DAYS} days.',
-        'items':            [
+        'items': [
             {
                 'name':           i['item_name'],
                 'days_remaining': i['days_remaining'],

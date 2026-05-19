@@ -3,15 +3,26 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routes import household, predictions, restock, recipes
 from backend.database.connection import init_db
+from backend.notifications.scheduler import start_scheduler, stop_scheduler
 import uvicorn
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Modern FastAPI lifespan handler — replaces deprecated @app.on_event."""
+    """
+    Modern FastAPI lifespan handler — replaces deprecated @app.on_event.
+
+    Startup sequence:
+      1. init_db   — ensure all tables exist (idempotent via create_all)
+      2. start_scheduler — register APScheduler cron jobs and start the loop
+
+    Shutdown sequence:
+      1. stop_scheduler — graceful shutdown (no in-flight jobs interrupted)
+    """
     await init_db()
+    start_scheduler()
     yield
-    # Teardown logic can go here if needed in future
+    stop_scheduler()
 
 
 app = FastAPI(
@@ -36,7 +47,10 @@ app.include_router(recipes.router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "1.0.0"}
+    """Health check — also reports scheduler job count."""
+    from backend.notifications.scheduler import scheduler
+    jobs = [{"id": j.id, "next_run": str(j.next_run_time)} for j in scheduler.get_jobs()]
+    return {"status": "ok", "version": "1.0.0", "scheduled_jobs": jobs}
 
 
 @app.get("/")
