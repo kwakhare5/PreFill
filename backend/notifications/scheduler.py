@@ -95,21 +95,20 @@ async def daily_depletion_check_all() -> None:
                     logger.debug("[Scheduler] Household %s — nothing depleting", hh.user_id)
                     continue
 
-                for item in items:
-                    alert = RestockAlert(
-                        household_id=hh.id,
-                        item_id=item["item_id"],
-                        item_name=item["item_name"],
-                        alert_type="depletion_warning",
-                        confidence=item["confidence_score"],
-                        message=(
-                            f"{item['item_name']} will run out in ~{item['days_remaining']:.1f} days "
-                            f"(confidence: {item['confidence_label']})."
-                        ),
-                        sent_at=now,
-                        status="pending",
-                    )
-                    db.add(alert)
+                item_ids_list = [item["item_id"] for item in items]
+                names = [item["item_name"] for item in items]
+                message = (
+                    f"[ALERT] Running low: {', '.join(names[:3])}{'...' if len(names) > 3 else ''}. "
+                    f"Reply YES to reorder or NO to skip."
+                )
+                alert = RestockAlert(
+                    household_id=hh.id,
+                    item_ids=item_ids_list,
+                    message_sent=message,
+                    sent_at=now,
+                    status="pending",
+                )
+                db.add(alert)
 
                 await db.commit()
                 logger.info(

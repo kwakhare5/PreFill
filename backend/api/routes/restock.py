@@ -85,11 +85,12 @@ async def check_depletions_for_household(household_id: str, db: AsyncSession) ->
     recent_result = await db.execute(recent_stmt)
     recent_alerts = recent_result.scalars().all()
 
-    # item_id is a single string in RestockAlert (one row per SKU)
+    # item_ids is a JSONB list of item_id strings in RestockAlert
     recently_alerted_ids: set[str] = set()
     for alert in recent_alerts:
-        if alert.item_id:
-            recently_alerted_ids.add(str(alert.item_id))
+        if alert.item_ids:
+            for item_id in alert.item_ids:
+                recently_alerted_ids.add(str(item_id))
 
     # --- Step 3: filter and format -------------------------------------------
     depleting = []
@@ -164,35 +165,30 @@ async def trigger_restock_check(user_id: str, db: AsyncSession = Depends(get_db)
             'items':            [],
         }
 
-    # Write one RestockAlert per depleting item (schema: single item_id/item_name)
-    # Why one-per-item: lets us track acted/dismissed status independently per SKU.
+    # Write one RestockAlert per household check (JSONB list of all depleting item IDs)
     now = datetime.now(timezone.utc)
-    alert_ids: list[str] = []
-
-    for item in items:
-        alert = RestockAlert(
-            household_id=household.id,
-            item_id=item['item_id'],
-            item_name=item['item_name'],
-            alert_type='depletion_warning',
-            confidence=item['confidence_score'],
-            message=(
-                f"{item['item_name']} will run out in ~{item['days_remaining']:.1f} days "
-                f"(confidence: {item['confidence_label']})."
-            ),
-            sent_at=now,
-            status='pending',
-        )
-        db.add(alert)
-        await db.flush()  # get ID before commit
-        alert_ids.append(str(alert.id))
-
+    names = [i['item_name'] for i in items]
+    message = (
+        f"[ALERT] Running low: {', '.join(names[:3])}{'...' if len(names) > 3 else ''}. "
+        f"Reply YES to reorder or NO to skip."
+    )
+    alert = RestockAlert(
+        household_id=household.id,
+        item_ids=[item['item_id'] for item in items],
+        message_sent=message,
+        sent_at=now,
+        status='pending',
+    )
+    db.add(alert)
+    await db.flush()
+    alert_id = str(alert.id)
     await db.commit()
 
     return {
         'alerts_triggered': len(items),
-        'alert_ids':        alert_ids,
+        'alert_id':         alert_id,
         'message':          f'{len(items)} item(s) depleting within {settings.ALERT_THRESHOLD_DAYS} days.',
+        'whatsapp_preview':  message,
         'items': [
             {
                 'name':           i['item_name'],
