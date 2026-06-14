@@ -7,7 +7,7 @@
    family of 4 just from grocery order patterns.
  ───────────────────────────────────────────────────────── */
 import { useEffect, useState } from 'react';
-import { householdApi, predictionsApi } from '../../lib/api';
+import { householdApi, predictionsApi, APIPrediction } from '../../lib/api';
 
 interface ProfileData {
   type: string;
@@ -120,7 +120,7 @@ export default function HouseholdPage() {
         }
 
         if (pred && pred.predictions && pred.predictions.length > 0) {
-          const formattedConsumption = pred.predictions.map((p: any) => ({
+          const formattedConsumption = pred.predictions.map((p: APIPrediction) => ({
             label: p.item_name.split(" — ")[0].split(" (")[0], // Clean name
             rate: formatRate(p.avg_daily_consumption, p.item_name),
             conf: Math.round((p.confidence_score || 0.5) * 100),

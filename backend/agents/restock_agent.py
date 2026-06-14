@@ -168,7 +168,12 @@ async def parse_user_reply(state: RestockState) -> dict:
                 ),
             }],
         )
-        wanted = json.loads(resp.content[0].text)
+        resp_text = resp.content[0].text.strip()
+        if "```json" in resp_text:
+            resp_text = resp_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in resp_text:
+            resp_text = resp_text.split("```")[1].split("```")[0].strip()
+        wanted = json.loads(resp_text)
         confirmed = [
             i for i in state["depleting_items"]
             if any(w.lower() in i["item_name"].lower() for w in wanted)

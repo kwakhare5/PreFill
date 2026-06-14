@@ -9,7 +9,7 @@
    get a pantry-aware ingredient check. The search is the UI.
  ───────────────────────────────────────────────────────── */
 import { useState, useEffect } from 'react';
-import { recipesApi, predictionsApi } from '../../lib/api';
+import { recipesApi, predictionsApi, APIRecipe, APIPrediction } from '../../lib/api';
 
 type Ingredient = {
   name: string;
@@ -77,8 +77,8 @@ export default function RecipesPage() {
   const [result, setResult]   = useState<RecipeResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [ordered, setOrdered] = useState(false);
-  const [savedRecipes, setSavedRecipes] = useState<any[]>([]);
-  const [predictions, setPredictions] = useState<any[]>([]);
+  const [savedRecipes, setSavedRecipes] = useState<APIRecipe[]>([]);
+  const [predictions, setPredictions] = useState<APIPrediction[]>([]);
 
   useEffect(() => {
     async function loadRecipesAndPantry() {

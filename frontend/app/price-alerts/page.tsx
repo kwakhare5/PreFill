@@ -22,7 +22,7 @@ type CommodityData = {
   avg30d: number;
   signal: 'SPIKE' | 'DIP' | 'STABLE' | 'WATCH';
   history: PricePoint[];
-  suggestion?: string;
+  suggestion?: string | null;
 };
 
 const FALLBACK_COMMODITIES: CommodityData[] = [
