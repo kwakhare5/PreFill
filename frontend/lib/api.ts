@@ -15,4 +15,13 @@ export const predictionsApi = {
   getForHousehold: (householdId: string) => api.get(`/api/predictions/${householdId}`),
 };
 
+export const recipesApi = {
+  getForHousehold: (userId: string) => api.get(`/api/recipes/${userId}`),
+};
+
+export const pricesApi = {
+  getFeed: () => api.get('/api/prices/feed'),
+  getAlerts: () => api.get('/api/prices/alerts'),
+};
+
 export default api;
