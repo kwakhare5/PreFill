@@ -167,11 +167,8 @@ async def trigger_restock_check(user_id: str, db: AsyncSession = Depends(get_db)
 
     # Write one RestockAlert per household check (JSONB list of all depleting item IDs)
     now = datetime.now(timezone.utc)
-    names = [i['item_name'] for i in items]
-    message = (
-        f"[ALERT] Running low: {', '.join(names[:3])}{'...' if len(names) > 3 else ''}. "
-        f"Reply YES to reorder or NO to skip."
-    )
+    from backend.seed.catalog import format_restock_alert_message
+    message = format_restock_alert_message(items)
     alert = RestockAlert(
         household_id=household.id,
         item_ids=[item['item_id'] for item in items],
