@@ -44,7 +44,7 @@ anthropic_client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 # Claude model to use for message generation and reply parsing.
 # Sonnet is the right choice here: fast, cheap, and the prompts are
 # well-structured enough that Opus-level reasoning isn't needed at runtime.
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
+CLAUDE_MODEL = "claude-3-5-sonnet-latest"
 
 
 # ---------------------------------------------------------------------------
