@@ -74,7 +74,7 @@ async def get_household_profile(user_id: str, db: AsyncSession = Depends(get_db)
         "composition_confidence": hh.composition_confidence,
         "intelligence_consent": hh.intelligence_consent,
         "notifications_enabled": hh.notifications_enabled,
-        "created_at": hh.created_at.isoformat() if hh.created_at else None
+        "created_at": hh.created_at.isoformat() if hh.created_at is not None else None
     }
 
 

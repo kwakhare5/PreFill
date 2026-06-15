@@ -67,9 +67,12 @@ async def fetch_and_sync_orders(household_id: str, user_id: str, db: AsyncSessio
     else:
         already_synced = set()
 
+    seen = set()
     for raw_order in raw_orders:
-        if raw_order["order_id"] in already_synced:
-            continue  # Skip orders already in DB
+        order_id = raw_order["order_id"]
+        if order_id in already_synced or order_id in seen:
+            continue  # Skip orders already in DB or already processed in this batch
+        seen.add(order_id)
 
         new_order = Order(
             household_id=household_id,

@@ -8,6 +8,7 @@ import { Package, ShieldCheck, Zap, Sparkles, ShoppingCart, Calendar, Bell, Bell
 
 
 interface DepletingItem {
+  id: string;
   name: string;
   days: number;
   conf: number;
@@ -24,11 +25,11 @@ const STATS = [
 ];
 
 const FALLBACK_DEPLETING: DepletingItem[] = [
-  { name: "Amul Taza Milk 1L",         days: 2,  conf: 76, avg: "1.1L/day",  cycle: "2.1d"  },
-  { name: "Tomatoes (500g)",           days: 1,  conf: 78, avg: "150g/day",  cycle: "3d"    },
-  { name: "Nandini Eggs (Pack of 12)", days: 2,  conf: 88, avg: "2.3/day",   cycle: "5d"    },
-  { name: "Fortune Sunflower Oil 1L",  days: 2,  conf: 87, avg: "68ml/day",  cycle: "15d"   },
-  { name: "Aashirvaad Atta 5kg",       days: 12, conf: 68, avg: "280g/day",  cycle: "13d"   },
+  { id: "fallback-milk", name: "Amul Taza Milk 1L",         days: 1,  conf: 76, avg: "0.48L/day",  cycle: "1.8d" },
+  { id: "fallback-tomatoes", name: "Tomatoes (500g)",       days: 1,  conf: 78, avg: "140g/day",   cycle: "3.1d" },
+  { id: "fallback-eggs", name: "Nandini Eggs (Pack of 12)", days: 2,  conf: 88, avg: "2.4/day",    cycle: "4.6d" },
+  { id: "fallback-bread", name: "Britannia Whole Wheat Bread", days: 3, conf: 82, avg: "0.24/day",  cycle: "3.9d" },
+  { id: "fallback-onions", name: "Onions (1kg)",            days: 5,  conf: 72, avg: "130g/day",   cycle: "7.7d" },
 ];
 
 
@@ -216,6 +217,7 @@ export default function Home() {
 
   const depleting = predictionsData?.predictions && predictionsData.predictions.length > 0
     ? predictionsData.predictions.map((p: APIPrediction) => ({
+        id: p.item_id,
         name: p.item_name,
         days: p.days_remaining !== null ? Math.round(p.days_remaining) : 10,
         conf: Math.round((p.confidence_score || 0.5) * 100),
@@ -502,7 +504,7 @@ export default function Home() {
 
                 return (
                   <div
-                    key={item.name}
+                    key={item.id || item.name}
                     className="relative w-full h-48 rounded-2xl glass-card overflow-hidden group hover:border-accent hover:shadow-[0_8px_30px_rgba(255,90,0,0.08)] transition-all duration-300 flex flex-col justify-between p-4 cursor-pointer"
                     onClick={(e) => handleAddToCart(item.name, e)}
                   >
@@ -650,7 +652,7 @@ export default function Home() {
 
                 return (
                   <div
-                    key={item.name}
+                    key={item.id || item.name}
                     className={`group px-6 py-5.5 flex flex-col gap-4 hover:bg-white/40 dark:hover:bg-neutral-900/10 transition-all ${
                       isSnoozed ? "opacity-35" : ""
                     }`}

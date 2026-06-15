@@ -57,8 +57,8 @@ async def get_recipes(user_id: str, db: AsyncSession = Depends(get_db)):
                 'servings':     r.servings,
                 'ingredients':  r.ingredients,
                 'cuisine':      r.cuisine,
-                'pinned_for':   r.pinned_for.isoformat() if r.pinned_for else None,
-                'created_at':   r.created_at.isoformat() if r.created_at else None,
+                'pinned_for':   r.pinned_for.isoformat() if r.pinned_for is not None else None,
+                'created_at':   r.created_at.isoformat() if r.created_at is not None else None,
             }
             for r in recipes
         ],

@@ -30,7 +30,7 @@ Why LangGraph?
 import json
 import logging
 import string
-from typing import Optional
+from typing import Optional, Any
 
 from langgraph.graph import StateGraph, END
 from typing_extensions import TypedDict
@@ -112,7 +112,7 @@ async def call_groq_api(prompt: str, system_prompt: Optional[str] = None, json_m
     last_err = None
     
     for model in models:
-        payload = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "temperature": 0.2
@@ -163,7 +163,7 @@ async def call_nvidia_api(prompt: str, system_prompt: Optional[str] = None, json
     last_err = None
     
     for model in models:
-        payload = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "temperature": 0.2
@@ -405,7 +405,8 @@ async def parse_user_reply(state: RestockState) -> dict:
                     break
             if not matched:
                 for cat_item in CATALOG:
-                    if name.lower() in cat_item["name"].lower() or cat_item["name"].lower() in name.lower():
+                    cat_name = str(cat_item["name"])
+                    if name.lower() in cat_name.lower() or cat_name.lower() in name.lower():
                         if not any(c["item_name"] == cat_item["name"] for c in confirmed):
                             confirmed.append({
                                 "item_name": cat_item["name"],
@@ -509,7 +510,7 @@ async def parse_user_reply(state: RestockState) -> dict:
         # 4. Check for additions from CATALOG
         from backend.seed.catalog import CATALOG
         for cat_item in CATALOG:
-            cat_name_lower = cat_item["name"].lower()
+            cat_name_lower = str(cat_item["name"]).lower()
             matched = False
             for uw in search_words:
                 if is_fuzzy_match(uw, cat_name_lower) or any(is_fuzzy_match(uw, part) for part in cat_name_lower.split()):
@@ -524,7 +525,7 @@ async def parse_user_reply(state: RestockState) -> dict:
                         break
             if matched:
                 # check if already in confirmed
-                if not any(c["item_name"].lower() == cat_item["name"].lower() for c in confirmed):
+                if not any(str(c["item_name"]).lower() == str(cat_item["name"]).lower() for c in confirmed):
                     confirmed.append({
                         "item_name": cat_item["name"],
                         "confidence_score": 1.0,
@@ -811,7 +812,14 @@ async def place_order(state: RestockState) -> dict:
     On success, returns order ID and ETA for the WhatsApp confirmation.
     """
     try:
-        data = await mcp_client.place_instamart_order(state["cart_id"])
+        cart_id = state.get("cart_id")
+        if not cart_id:
+            return {
+                "response_message": "⚠️ No active cart found. Please try adding items first.",
+                "stage": "done",
+                "error": "missing_cart_id",
+            }
+        data = await mcp_client.place_instamart_order(cart_id)
 
         if data.get("success"):
             order_id = data["order_id"]
@@ -903,7 +911,7 @@ def build_restock_graph() -> StateGraph:
 
     Entry: routes dynamically based on conversation stage.
     """
-    graph = StateGraph(RestockState)
+    graph = StateGraph(RestockState)  # type: ignore
 
     # Register nodes
     graph.add_node("generate_alert", generate_alert_message)

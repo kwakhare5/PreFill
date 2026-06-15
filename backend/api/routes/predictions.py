@@ -74,7 +74,7 @@ async def get_predictions(user_id: str, db: AsyncSession = Depends(get_db)):
         days_remaining: float | None = None
         status = 'unknown'
 
-        if m.estimated_depletion_date:
+        if m.estimated_depletion_date is not None:
             dep = m.estimated_depletion_date
             # Normalize timezone — DB may store naive UTC datetimes
             if dep.tzinfo is None:
@@ -96,14 +96,14 @@ async def get_predictions(user_id: str, db: AsyncSession = Depends(get_db)):
             'category':                  m.category,
             'avg_daily_consumption':     m.avg_daily_consumption,
             'consumption_cycle_days':    m.consumption_cycle_days,
-            'last_purchase_date':        m.last_purchase_date.isoformat() if m.last_purchase_date else None,
+            'last_purchase_date':        m.last_purchase_date.isoformat() if m.last_purchase_date is not None else None,
             'last_purchase_quantity':    m.last_purchase_quantity,
-            'estimated_depletion_date':  m.estimated_depletion_date.isoformat() if m.estimated_depletion_date else None,
+            'estimated_depletion_date':  m.estimated_depletion_date.isoformat() if m.estimated_depletion_date is not None else None,
             'days_remaining':            days_remaining,
             'confidence_score':          m.confidence_score,
             'data_points':               m.data_points,
             'status':                    status,  # depleted / critical / low / ok / unknown
-            'updated_at':                m.updated_at.isoformat() if m.updated_at else None,
+            'updated_at':                m.updated_at.isoformat() if m.updated_at is not None else None,
         })
 
     return {

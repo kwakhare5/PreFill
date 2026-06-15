@@ -134,8 +134,8 @@ async def track_and_alert_prices(db: AsyncSession) -> dict:
                         db.add(alert_record)
 
                         # Send WhatsApp message if phone is set
-                        if hh.phone_number:
-                            await send_whatsapp_message(hh.phone_number, alert_msg)
+                        if hh.phone_number:  # type: ignore
+                            await send_whatsapp_message(hh.phone_number, alert_msg)  # type: ignore
                     
                     alerts_triggered.append({
                         "item_name": item_name,

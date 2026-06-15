@@ -177,7 +177,7 @@ async def check_pantry_node(state: RecipeState) -> RecipeState:
             state["pantry_items"] = []
             return state
 
-        state["household_uuid"] = hh.id
+        state["household_uuid"] = hh.id  # type: ignore
 
         # Retrieve consumption models
         stmt_models = select(ConsumptionModel).where(ConsumptionModel.household_id == hh.id)
@@ -189,7 +189,7 @@ async def check_pantry_node(state: RecipeState) -> RecipeState:
 
         for m in models:
             estimated_remaining = 0.0
-            if m.last_purchase_date and m.last_purchase_quantity:
+            if m.last_purchase_date is not None and m.last_purchase_quantity is not None:
                 lp_date = m.last_purchase_date
                 if lp_date.tzinfo is None:
                     lp_date = lp_date.replace(tzinfo=timezone.utc)
@@ -348,7 +348,7 @@ async def build_cart_node(state: RecipeState) -> RecipeState:
 # Graph Construction
 # ---------------------------------------------------------------------------
 
-workflow = StateGraph(RecipeState)
+workflow = StateGraph(RecipeState)  # type: ignore
 
 workflow.add_node("parse_recipe", parse_recipe_node)
 workflow.add_node("check_pantry", check_pantry_node)
@@ -374,7 +374,7 @@ async def recipe_to_cart(recipe_name: str, servings: int, household_id: str, db:
     """
     Stateful execution wrapper that runs the Recipe Graph from end to end.
     """
-    initial_state = {
+    initial_state: RecipeState = {
         "db": db,
         "household_id": household_id,
         "recipe_name": recipe_name,

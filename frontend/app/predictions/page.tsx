@@ -156,7 +156,7 @@ export default function PredictionsPage() {
           My Groceries {loading && "(LOADING...)"}
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight leading-tight font-display text-foreground">
-          What's in Your <span className="text-accent">Kitchen?</span>
+          {"What's in Your "}<span className="text-accent">Kitchen?</span>
         </h1>
         <p className="text-sm text-muted max-w-lg leading-relaxed font-medium">
           See all your tracked groceries, how much is left, and when each one was last bought. Tap any item to see its past buys.
