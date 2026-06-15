@@ -18,7 +18,7 @@ interface DepletingItem {
 
 const STATS = [
   { value: "34",     label: "Groceries Monitored",   sub: "Automatically tracked" },
-  { value: "98%",    label: "Accuracy Rate",          sub: "Based on your habits" },
+  { value: "98%",    label: "Accuracy",              sub: "Based on your habits" },
   { value: "12",     label: "Stockouts Avoided",      sub: "Saved from running out" },
   { value: "High",   label: "Smart Helper",           sub: "Covering your main items" },
 ];
@@ -45,9 +45,9 @@ function urgencyLabel(days: number, fillPercent: number) {
 }
 
 function certaintyLabel(conf: number) {
-  if (conf >= 85) return "Very Accurate";
-  if (conf >= 70) return "Highly Likely";
-  return "Estimated";
+  if (conf >= 85) return "Very sure";
+  if (conf >= 70) return "Pretty sure";
+  return "Guessing";
 }
 
 function formatAvg(avg: string) {
@@ -476,7 +476,7 @@ export default function Home() {
             ))
           ) : depleting.length === 0 ? (
             <div className="col-span-full py-8 text-center text-xs text-muted font-bold font-display uppercase tracking-widest">
-              No depletions predicted. All stocked up! 👍
+              All groceries are stocked up! 👍
             </div>
           ) : (
             [...depleting]
@@ -616,7 +616,7 @@ export default function Home() {
             <span className="text-xs font-bold uppercase tracking-wider text-foreground font-display">Running Out Soon</span>
           </div>
           <Link href="/predictions" className="text-xs font-bold text-accent hover:text-accent/85 hover:underline transition-colors flex items-center gap-1">
-            View Full Timeline <ArrowRight className="h-3 w-3" />
+            View Full List <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
@@ -643,7 +643,7 @@ export default function Home() {
             ))
           ) : depleting.length === 0 ? (
             <div className="py-10 text-center text-xs text-muted font-bold font-display uppercase tracking-widest">
-              No active depletions tracked.
+              No items running out soon.
             </div>
           ) : (
             [...depleting]

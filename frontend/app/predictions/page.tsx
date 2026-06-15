@@ -153,13 +153,13 @@ export default function PredictionsPage() {
       {/* ── Header ──────────────────────────────────────────── */}
       <div className="flex flex-col gap-2.5">
         <div className="text-accent text-[11px] font-bold tracking-widest uppercase font-display">
-          Grocery Inventory {loading && "(LOADING...)"}
+          My Groceries {loading && "(LOADING...)"}
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight leading-tight font-display text-foreground">
           What's in Your <span className="text-accent">Kitchen?</span>
         </h1>
         <p className="text-sm text-muted max-w-lg leading-relaxed font-medium">
-          See all your tracked groceries, how much is left, and when each one was last bought. Tap any item to see its order history.
+          See all your tracked groceries, how much is left, and when each one was last bought. Tap any item to see its past buys.
         </p>
       </div>
 
@@ -234,7 +234,7 @@ export default function PredictionsPage() {
                 onClick={() => toggleDetails(item.id)}
                 className="text-xs text-accent hover:text-accent/95 font-bold flex items-center justify-between px-6 h-11 border-t border-border/60 bg-neutral-50/20 dark:bg-neutral-900/10 cursor-pointer font-display transition-colors"
               >
-                <span>{isOpen ? "Hide order history" : "See past orders for this item"}</span>
+                <span>{isOpen ? "Hide past buys" : "See when you last bought this"}</span>
                 {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </button>
 
