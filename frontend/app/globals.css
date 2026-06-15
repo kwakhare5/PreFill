@@ -181,11 +181,11 @@ body {
 .sparkline { display: block; overflow: visible; }
 
 .jar-text-glow {
-  text-shadow: var(--text-glow);
+  text-shadow: none;
 }
 
 .jar-text-glow-muted {
-  text-shadow: var(--text-glow-muted);
+  text-shadow: none;
 }
 
 /* ─── Premium Micro-animations & Transitions ─────────────────────────── */

@@ -38,6 +38,26 @@ async def get_predictions(user_id: str, db: AsyncSession = Depends(get_db)):
     Sorted by urgency: items depleting soonest appear first.
     Items with no depletion date (avg_daily=0) appear at the end.
     """
+    import os
+    import json
+    from backend.api.routes.household import reset_scenario_data
+    
+    # Get currently active scenario or default to standard
+    scenario = "standard"
+    try:
+        active_scenario_path = os.path.join(os.path.dirname(__file__), "..", "..", "active_scenario.json")
+        if os.path.exists(active_scenario_path):
+            with open(active_scenario_path, "r") as f:
+                data = json.load(f)
+                scenario = data.get("scenario", "standard")
+    except Exception as e:
+        print(f"Warning: Failed to read active scenario: {e}")
+        
+    try:
+        await reset_scenario_data(user_id, scenario, db)
+    except Exception as e:
+        print(f"Warning: Failed to auto-reset scenario data: {e}")
+
     hh = await _get_household(user_id, db)
 
     result = await db.execute(

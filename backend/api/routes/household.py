@@ -78,38 +78,23 @@ async def get_household_profile(user_id: str, db: AsyncSession = Depends(get_db)
     }
 
 
-@router.post("/{user_id}/scenario")
-async def switch_household_scenario(
-    user_id: str,
-    body: dict,
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Switch the mock data scenario (standard, party, vacation).
-    Clears current db orders, order items, and models. Generates, writes, and syncs new scenario.
-    """
-    from fastapi import HTTPException
-    import httpx
+async def reset_scenario_data(user_id: str, scenario: str, db: AsyncSession):
     from backend.seed.scenarios import generate_scenario_orders
     from backend.services.sync_service import fetch_and_sync_orders
     from backend.ml.consumption_model import ConsumptionModeler
     from backend.ml.household_profiler import update_household_profile
-    from backend.database.models import Order, ConsumptionModel, RestockAlert
+    from backend.database.models import Order, ConsumptionModel, RestockAlert, OrderItem
     import os
     import json
+    import httpx
+    from sqlalchemy import delete, select
     
-    scenario = body.get("scenario", "standard")
-    if scenario not in ["standard", "party", "vacation"]:
-        raise HTTPException(status_code=400, detail="Invalid scenario name")
-        
     household = await get_or_create_household(user_id, db)
     household_id = str(household.id)
     
     # 1. Clear database history for this household to ensure clean sync state
-    from sqlalchemy import delete
     await db.execute(delete(ConsumptionModel).where(ConsumptionModel.household_id == household_id))
     
-    from backend.database.models import OrderItem
     # Subquery for orders of this household
     orders_stmt = select(Order.id).where(Order.household_id == household_id)
     orders_res = await db.execute(orders_stmt)
@@ -130,16 +115,13 @@ async def switch_household_scenario(
         with open(seed_path, "w") as f:
             json.dump(orders_data, f, indent=2)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to write seed file: {e}")
+        raise Exception(f"Failed to write seed file: {e}")
         
     # 3. Trigger mock server reload
     try:
         async with httpx.AsyncClient() as client:
             reload_res = await client.post("http://127.0.0.1:8001/reload_mock_orders", timeout=5.0)
-            if reload_res.status_code != 200:
-                raise HTTPException(status_code=502, detail="Mock server reload failed")
     except Exception as e:
-        # Log warning but do not crash (fallback safety)
         print(f"Warning: Mock server reload request failed: {e}")
         
     # 4. Sync orders back to DB
@@ -150,11 +132,43 @@ async def switch_household_scenario(
     rebuild_res = await modeler.rebuild_all_models(household_id, db)
     await update_household_profile(household_id, db)
     
+    # Write active scenario to config file
+    try:
+        active_scenario_path = os.path.join(os.path.dirname(__file__), "..", "..", "active_scenario.json")
+        with open(active_scenario_path, "w") as f:
+            json.dump({"scenario": scenario}, f)
+    except Exception as e:
+        print(f"Warning: Failed to save active scenario: {e}")
+        
+    return {
+        "orders_generated": len(orders_data),
+        "models_built": rebuild_res.get("built", 0)
+    }
+
+
+@router.post("/{user_id}/scenario")
+async def switch_household_scenario(
+    user_id: str,
+    body: dict,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Switch the mock data scenario (standard, party, vacation).
+    Clears current db orders, order items, and models. Generates, writes, and syncs new scenario.
+    """
+    from fastapi import HTTPException
+    
+    scenario = body.get("scenario", "standard")
+    if scenario not in ["standard", "party", "vacation"]:
+        raise HTTPException(status_code=400, detail="Invalid scenario name")
+        
+    try:
+        res = await reset_scenario_data(user_id, scenario, db)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+        
     return {
         "success": True,
         "message": f"Successfully switched to '{scenario}' scenario.",
-        "details": {
-            "orders_generated": len(orders_data),
-            "models_built": rebuild_res.get("built", 0)
-        }
+        "details": res
     }
