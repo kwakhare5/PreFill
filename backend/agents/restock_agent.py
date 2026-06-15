@@ -33,7 +33,6 @@ import string
 from typing import Optional
 
 from langgraph.graph import StateGraph, END
-from anthropic import Anthropic
 from typing_extensions import TypedDict
 import httpx
 
@@ -41,14 +40,6 @@ from backend.config import settings
 from backend.mcp.client import mcp_client
 
 logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Anthropic client — uses ANTHROPIC_API_KEY from .env via config
-# ---------------------------------------------------------------------------
-anthropic_client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-# Claude model to use for message generation and reply parsing.
-CLAUDE_MODEL = "claude-3-5-sonnet-latest"
 
 
 def levenshtein_distance(s1: str, s2: str) -> int:
@@ -92,11 +83,6 @@ def is_fuzzy_match(w1: str, w2: str) -> bool:
         return dist <= 2
     else:
         return dist <= 3
-
-
-def is_anthropic_configured() -> bool:
-    key = settings.ANTHROPIC_API_KEY
-    return bool(key and key.strip() and "your_key_here" not in key)
 
 
 def is_groq_configured() -> bool:
@@ -256,32 +242,6 @@ async def generate_alert_message(state: RestockState) -> dict:
     items_text = "\n".join(detailed_lines)
 
     message = None
-    if is_anthropic_configured():
-        try:
-            response = anthropic_client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=300,
-                messages=[{
-                    "role": "user",
-                    "content": (
-                        f"You are a smart household assistant for Swiggy Instamart.\n\n"
-                        f"Items likely running low:\n{items_text}\n\n"
-                        f"Write a WhatsApp message under 150 words. You MUST list all items from the list above, showing for each item:\n"
-                        f"- Its whole name\n"
-                        f"- Qty: 1\n"
-                        f"- Price (e.g. ₹X)\n"
-                        f"- Unit and Category\n"
-                        f"- Confidence % and Days remaining\n\n"
-                        f"At the end of the item list, calculate and mention the estimated total amount (Estimated Total: ₹{total_amount:.0f}).\n"
-                        f"Be friendly but brief. Max 2 emojis. End with: "
-                        f"'Would you like to order them?' "
-                        f"Mention this is based on their purchase pattern. Write ONLY the message."
-                    ),
-                }],
-            )
-            message = response.content[0].text
-        except Exception as e:
-            logger.error(f"Claude API error in generate_alert: {e}")
 
     if not message and is_groq_configured():
         try:
@@ -385,35 +345,6 @@ async def parse_user_reply(state: RestockState) -> dict:
     items_list = "\n".join([f"- {i['item_name']}" for i in active_items])
     wanted = None
     unrecognized = False
-
-    # Try Anthropic (Claude)
-    if is_anthropic_configured():
-        try:
-            resp = anthropic_client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=200,
-                messages=[{
-                    "role": "user",
-                    "content": (
-                        f"The user has these items in their cart:\n{items_list}\n\n"
-                        f"Their reply: \"{state['user_message']}\"\n\n"
-                        f"Analyze their reply and return a JSON object with two keys:\n"
-                        f"1. 'wanted': a list of item names they want to keep or add to the cart. By default, they want to keep all items in their cart unless they specify to skip or remove some.\n"
-                        f"2. 'unrecognized': a boolean. Set to true ONLY if their reply is completely unrelated garbage, gibberish, or unrelated chit-chat (e.g. 'hello', 'who are you', 'testing'). If they are confirming, rejecting, or editing items, set it to false.\n"
-                        f"Format the output strictly as a JSON object, like: {{\"wanted\": [\"Amul Taza Milk 1L\"], \"unrecognized\": false}}."
-                    ),
-                }],
-            )
-            resp_text = resp.content[0].text.strip()
-            if "```json" in resp_text:
-                resp_text = resp_text.split("```json")[1].split("```")[0].strip()
-            elif "```" in resp_text:
-                resp_text = resp_text.split("```")[1].split("```")[0].strip()
-            parsed = json.loads(resp_text)
-            wanted = parsed.get("wanted", [])
-            unrecognized = parsed.get("unrecognized", False)
-        except Exception as e:
-            logger.error(f"Claude parse error: {e}")
 
     # Try Groq (Llama)
     if wanted is None and is_groq_configured():
@@ -656,25 +587,7 @@ async def parse_order_intent(state: RestockState) -> dict:
     raw_items = None
     not_an_order = False
 
-    if is_anthropic_configured():
-        try:
-            resp = anthropic_client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=300,
-                messages=[{"role": "user", "content": extraction_prompt}],
-            )
-            resp_text = resp.content[0].text.strip()
-            if "```json" in resp_text:
-                resp_text = resp_text.split("```json")[1].split("```")[0].strip()
-            elif "```" in resp_text:
-                resp_text = resp_text.split("```")[1].split("```")[0].strip()
-            parsed = json.loads(resp_text)
-            raw_items = parsed.get("items", [])
-            not_an_order = parsed.get("not_an_order", False)
-        except Exception as e:
-            logger.error(f"Claude extraction error in parse_order_intent: {e}")
-
-    if raw_items is None and is_groq_configured():
+    if is_groq_configured():
         try:
             resp_text = await call_groq_api(prompt=extraction_prompt, json_mode=True)
             parsed = json.loads(resp_text)

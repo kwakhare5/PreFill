@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 
 from langgraph.graph import StateGraph, END
-from anthropic import Anthropic
 from typing_extensions import TypedDict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -22,12 +21,7 @@ from backend.database.models import Household, ConsumptionModel
 
 logger = logging.getLogger(__name__)
 
-# Anthropic client
-anthropic_client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-CLAUDE_MODEL = "claude-3-5-sonnet-latest"
-
 from backend.agents.restock_agent import (
-    is_anthropic_configured,
     is_groq_configured,
     is_nvidia_configured,
     call_groq_api,
@@ -132,18 +126,7 @@ Units must be: g, kg, ml, L, piece, tbsp, tsp"""
 
     text = None
 
-    if is_anthropic_configured():
-        try:
-            response = anthropic_client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            text = response.content[0].text.strip()
-        except Exception as e:
-            logger.error(f"Failed to parse recipe ingredients using Claude: {e}")
-
-    if not text and is_groq_configured():
+    if is_groq_configured():
         try:
             text = await call_groq_api(prompt=prompt)
             text = text.strip()

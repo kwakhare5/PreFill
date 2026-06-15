@@ -749,8 +749,8 @@ psql -h localhost -U postgres -d instamart_intelligence \
 
 ```
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost/instamart_intelligence
-MCP_BASE_URL=http://localhost:3000
-ANTHROPIC_API_KEY=your_key_here
+GROQ_API_KEY=your_key_here
+NVIDIA_API_KEY=your_key_here
 TWILIO_ACCOUNT_SID=your_sid
 TWILIO_AUTH_TOKEN=your_token
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
