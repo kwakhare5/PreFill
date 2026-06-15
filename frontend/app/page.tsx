@@ -208,7 +208,7 @@ export default function Home() {
     }, 3000);
   }
 
-  const { data: predictionsData, error: predictionsError, mutate: mutatePredictions, isLoading: predictionsLoading, isValidating: predictionsValidating } = useSWR(
+  const { data: predictionsData, mutate: mutatePredictions, isLoading: predictionsLoading, isValidating: predictionsValidating } = useSWR(
     "demo_user_001",
     fetcher,
     {

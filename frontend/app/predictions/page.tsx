@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { predictionsApi, APIPrediction } from "../../lib/api";
 import { Milk, Droplets, CircleDot, Package, Clock, Sparkles, ChevronDown, ChevronUp, Activity } from "lucide-react";
@@ -140,7 +140,7 @@ export default function PredictionsPage() {
     setShowDetails(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const { data: predictionsData, error: predictionsError, isLoading: predictionsLoading, isValidating: predictionsValidating } = useSWR(
+  const { data: predictionsData, isLoading: predictionsLoading, isValidating: predictionsValidating } = useSWR(
     "demo_user_001",
     fetcher,
     {
