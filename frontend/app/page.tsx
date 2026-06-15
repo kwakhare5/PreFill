@@ -64,23 +64,7 @@ function formatCycle(cycle: string) {
   return `Bought every ${Math.round(d)} days`;
 }
 
-function jarFluidStyle(name: string, fillPercent: number) {
-  let fluidColor = "rgba(16, 185, 129, 0.4)"; // default ok green
-  let border = "var(--ok)";
-  
-  if (fillPercent <= 20) {
-    fluidColor = "rgba(225, 29, 72, 0.45)"; // urgent red (danger)
-    border = "var(--danger)";
-  } else if (fillPercent <= 45) {
-    fluidColor = "rgba(217, 119, 6, 0.45)"; // low warning amber (warning)
-    border = "var(--warning)";
-  }
-  
-  return {
-    backgroundColor: fluidColor,
-    borderTop: `1px solid ${border}`
-  };
-}
+
 
 function ConfettiEffect({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
