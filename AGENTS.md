@@ -1,15 +1,14 @@
-# AGENTS.md
-# Universal agent context file ó works with all AI tools (Claude Code, Gemini CLI, Cursor, Zed).
-# This project's full context is in CLAUDE.md (Claude-specific).
-# All global AI rules live in: C:\Users\kwakh\.gemini\config\AGENTS.md
-
-# READ THESE FILES IN ORDER:
-# 1. CLAUDE.md  ó project identity, tech stack, design system, mistakes
-# 2. CONTEXT.md ó domain glossary, design token index, session log
-# 3. ARCHITECTURE.md ó DB schemas, API contracts (if it exists)
-
-# Re-export the content of CLAUDE.md so cross-tool agents get full context:
-# CLAUDE.md ‚Äî Local Project Context
+Ôªø# AGENTS.md
+# Universal agent context file ‚Äî works with all AI tools (Claude Code, Gemini CLI, Cursor).
+# Global AI rules: C:\Users\kwakh\.gemini\config\AGENTS.md (read automatically by Antigravity)
+# Brain: D:\workflow-main\brain\ (read via MCP obsidian-vault at session start)
+#
+# READ ORDER:
+# 1. Global AGENTS.md (auto-loaded)   ‚Üí behavior rules, brain read/write, audit loop
+# 2. This file / CLAUDE.md            ‚Üí project identity, tech stack, design system, mistakes
+# 3. CONTEXT.md                       ‚Üí domain glossary, session log
+# 4. ARCHITECTURE.md                  ‚Üí DB schemas, API contracts (if exists)
+# CLAUDE.md √¢‚Ç¨‚Äù Local Project Context
 
 # Note: All AI behaviors, commands (@TDD, @GRILL), and context maintenance rules 
 # are now globally enforced via ~/.gemini/config/AGENTS.md. Do not duplicate them here.
@@ -42,12 +41,14 @@
 
 | Command     | Skill Path / Action                                                                                                                                                                                              |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @SPEC     | Interview mode. AI asks ONE question at a time, builds \spec.md\ before any code. FORBIDDEN from coding until spec approved. |
 | @PLAN     | Standard agent planning mode. Create implementation_plan.md first.                                                                                                                                             |
-| @TDD      | [mp-tdd/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-tdd/SKILL.md) ó **Red-Green-Refactor.** Write failing tests first. Do not write implementation code until tests fail. |
-| @GRILL    | [mp-grill-me/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-grill-me/SKILL.md) ó **Relentless Interrogation.** Ask ONE question at a time to clarify architecture. Push back on bad ideas. DO NOT write code until alignment is reached. |
-| @DIAGNOSE | [mp-diagnose/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-diagnose/SKILL.md) ó **Scientific Method Bug Hunt.** 1. Build reproducer. 2. Form 3-5 hypotheses. 3. Instrument logging. 4. Fix only when proven. |
-| @ZOOM     | [mp-zoom-out/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-zoom-out/SKILL.md) ó **Architectural Mapping.** Stop coding. Map the codebase dependencies, data flow, and components before making sweeping changes. |
+| @TDD      | [mp-tdd/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-tdd/SKILL.md) ‚Äî **Red-Green-Refactor.** Write failing tests first. Do not write implementation code until tests fail. |
+| @GRILL    | [mp-grill-me/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-grill-me/SKILL.md) ‚Äî **Relentless Interrogation.** Ask ONE question at a time to clarify architecture. Push back on bad ideas. DO NOT write code until alignment is reached. |
+| @DIAGNOSE | [mp-diagnose/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-diagnose/SKILL.md) ‚Äî **Scientific Method Bug Hunt.** 1. Build reproducer. 2. Form 3-5 hypotheses. 3. Instrument logging. 4. Fix only when proven. |
+| @ZOOM     | [mp-zoom-out/SKILL.md](file:///C:/Users/kwakh/.gemini/config/skills/mp-zoom-out/SKILL.md) ‚Äî **Architectural Mapping.** Stop coding. Map the codebase dependencies, data flow, and components before making sweeping changes. |
 ## 5. MISTAKES TO AVOID
 
 _Autonomously updated by the AI whenever it encounters a project-specific error, compilation issue, or pattern mistake. Never repeat these._
+
 
