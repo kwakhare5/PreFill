@@ -19,7 +19,7 @@
    print `[AUDIT: found X files, pattern Y exists]`.
    Done when you can name every file you will touch. No exceptions.
 
-1. **State assumptions** in one sentence. Name the verification plan.
+1. **State assumptions + success criterion.** One sentence: what does DONE look like for this specific task? Be concrete. _"Done when: user can submit form and see confirmation toast."_
 
 2. **Prefactor first:** Before adding a feature, ask — is there a small refactor
    that makes this feature trivial? Do that first.
@@ -38,6 +38,7 @@
    - Comment-as-fix (commented out failing code instead of fixing it)
    - Fake renames (renamed file, imports not updated)
    Print: `[VERIFY: PASS]` or `[VERIFY: FAIL — reason]`. Never skip.
+   On FAIL: append one line to `MISTAKES TO AVOID` in `CLAUDE.md` before fixing.
 
 6. **TEACH LOOP** (significant features only):
    Print `[TEACH LOOP]` block explaining what was built and why in plain English.
