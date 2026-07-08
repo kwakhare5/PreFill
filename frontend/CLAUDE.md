@@ -1,15 +1,15 @@
-# CLAUDE.md — Instamart Intelligence: Frontend
+# CLAUDE.md — PreFill: Frontend
 # LEAN CONTEXT FILE. Hard cap: 200 lines.
-# This is the Next.js frontend subfolder of the Instamart Intelligence project.
+# This is the Next.js frontend subfolder of the PreFill project.
 # For full project context (backend, schema, decisions): read ../CLAUDE.md and ../ARCHITECTURE.md
 
 ---
 
 ## 1. PROJECT IDENTITY
 
-**Name:** Instamart Intelligence — Frontend
+**Name:** PreFill — Frontend
 **Parent project:** D:\Instamart Intelligence\
-**Goal:** Next.js frontend for the Instamart grocery intelligence platform
+**Goal:** Next.js frontend for the PreFill grocery intelligence platform
 
 **AI POINTER:** Full project context (DB schema, API, backend logic) is in the PARENT directory:
 - `../CLAUDE.md` — full stack context

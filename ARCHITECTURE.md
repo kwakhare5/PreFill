@@ -68,7 +68,7 @@ Once the system knows your consumption rates, it monitors all your items in the 
 
 **Real example WhatsApp flow:**
 ```
-[8:02 AM from Instamart Intelligence]
+[8:02 AM from PreFill]
 🛒 Your household is likely running low on:
 
 • Cooking oil (87% confident — last bought 14 days ago)
@@ -200,7 +200,7 @@ Anomalies recorded:
 ### The Competitive Moat Explained
 When you use regular Instamart, there's no switching cost. Every order is independent. Blinkit has your order history too. Neither app knows anything special about you.
 
-When you use Instamart Intelligence for 3+ months, something changes:
+When you use PreFill for 3+ months, something changes:
 - **Month 1:** The system has enough data to model your top 10 recurring items with ~60% confidence. Predictions are okay but not magical.
 - **Month 3:** 30+ items modeled, 80%+ confidence on staples, anomalies detected and filtered, household composition accurate. The system is genuinely useful.
 - **Month 6:** The system has seen you through one full seasonal cycle (summer, monsoon, winter). It knows your oil consumption spikes during Diwali cooking. It knows you order more fresh vegetables after New Year resolutions. It knows you were away for a week in March. This is irreplaceable data.
@@ -208,7 +208,7 @@ When you use Instamart Intelligence for 3+ months, something changes:
 At month 6, if you switch to Blinkit, you start from zero. Blinkit cannot replicate 6 months of household-specific intelligence instantly. That knowledge is the moat — and it grows with every order.
 
 **The metric that matters to Swiggy's product team:**
-90-day retention of Instamart Intelligence users vs regular Instamart users.
+90-day retention of PreFill users vs regular quick commerce users.
 
 ### Business Impact Numbers
 - **GMV impact:** "Proactive restocking eliminates the 'I'll get it later' behavior. A household that restocks oil when prompted (before it runs out) buys it on Instamart. A household that runs out might buy it at the kirana across the street. Recovering even 30% of those lost-to-kirana purchases represents meaningful incremental GMV."
@@ -976,13 +976,13 @@ CREATE TABLE recipes (
 
 ## 4. API CONTRACTS & INTEGRATIONS
 
-### Swiggy Instamart MCP APIs
-- **`get_instamart_orders`**: Complete order history — every order placed, every item, quantities, prices, timestamps.
-- **`search_instamart_items`**: Product listings matching a search query — item ID, name, price, available sizes.
-- **`update_instamart_cart`**: Updated cart state with all items.
-- **`get_instamart_cart`**: Current cart contents and total.
-- **`place_instamart_order`**: Order confirmation with order ID and estimated delivery time.
-- **`track_instamart_order`**: Real-time order status.
+### Platform MCP APIs
+- **`get_platform_orders`**: Complete order history — every order placed, every item, quantities, prices, timestamps.
+- **`search_platform_items`**: Product listings matching a search query — item ID, name, price, available sizes.
+- **`update_platform_cart`**: Updated cart state with all items.
+- **`get_platform_cart`**: Current cart contents and total.
+- **`place_platform_order`**: Order confirmation with order ID and estimated delivery time.
+- **`track_platform_order`**: Real-time order status.
 
 ### Demo Strategy
 - Seed data must not be mathematically uniform. Ensure it includes:
@@ -999,26 +999,26 @@ CREATE TABLE recipes (
 
 ## APPENDIX
 
-### Swiggy Builders Club Application Template
+### PreFill Application Template
 ```
-Subject: Instamart Intelligence — Household AI to win the Blinkit war
+Subject: PreFill — Household AI to win the quick commerce war
 
 Problem I'm solving:
-Blinkit and Instamart are functionally identical. Swiggy cannot win on speed or price alone.
-The only sustainable moat is intelligence.
+Blinkit, Zepto, and Instamart are functionally identical. Quick commerce cannot win on speed or price alone.
+The only sustainable moat is household-specific intelligence.
 
 What I built:
-Instamart Intelligence uses Prophet time-series forecasting on order history to model each
+PreFill uses Prophet time-series forecasting on order history to model each
 household's consumption rates, predict depletion dates with confidence scores, and proactively
 reorder via WhatsApp before items run out. Users who train the system for 3 months will never
-switch to Blinkit — they'd lose their household intelligence.
+switch platforms — they'd lose their household intelligence.
 
-Swiggy MCP APIs used:
-- get_instamart_orders (order history ingestion)
-- search_instamart_items (restock cart building)
-- update_instamart_cart (auto-cart population)
-- place_instamart_order (one-tap reorder)
-- track_instamart_order (delivery confirmation)
+Platform MCP APIs used:
+- get_platform_orders (order history ingestion)
+- search_platform_items (restock cart building)
+- update_platform_cart (auto-cart population)
+- place_platform_order (one-tap reorder)
+- track_platform_order (delivery confirmation)
 
 Business impact:
 - Switching cost: 3-6 months of household data = structural Blinkit lock-out

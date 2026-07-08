@@ -32,9 +32,9 @@ I am **Karan Wakhare**, an individual full-stack engineer with a strong focus on
 
 In the hyper-competitive quick commerce landscape, Swiggy Instamart and competitors like Blinkit are functionally commoditized — same brands, same 10-minute window, matching prices. There is virtually zero friction or switching cost for users. To win this war, Swiggy cannot rely on speed or price alone. It needs a **structural, data-driven switching cost.**
 
-### The Solution: Instamart Intelligence
+### The Solution: PreFill
 
-**Instamart Intelligence** is an AI manager that sits directly on top of a household's grocery order history, learns their consumption patterns, and manages restocking before items deplete.
+**PreFill** is an AI manager that sits directly on top of a household's grocery order history, learns their consumption patterns, and manages restocking before items deplete.
 
 Instead of waiting for users to realize they are out of milk or cooking oil, the system:
 
@@ -238,7 +238,7 @@ services:
     image: timescale/timescaledb:latest-pg16
     ports: ["5432:5432"]
     environment:
-      POSTGRES_DB: instamart_intelligence
+      POSTGRES_DB: prefill
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 ```

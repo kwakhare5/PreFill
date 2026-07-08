@@ -32,12 +32,12 @@
 
 ## 📌 About the Project
 
-**Instamart Intelligence** is a **full-stack AI application** built with **FastAPI, Next.js, Facebook Prophet, TimescaleDB, pgvector, Twilio, and LangGraph**.
+**PreFill** is a **full-stack AI application** built with **FastAPI, Next.js, Facebook Prophet, TimescaleDB, pgvector, Twilio, and LangGraph**.
 
-Instamart Intelligence watches how your household consumes groceries over time, learning your patterns (such as milk, atta, oil, and egg consumption rate changes) using Prophet forecasting models. It proactively notifies you over WhatsApp 2 days before items deplete, letting you restock via a stateful LangGraph agent in one tap. It also features price tracking and recipe-to-cart pantry intelligence.
+PreFill watches how your household consumes groceries over time, learning your patterns (such as milk, atta, oil, and egg consumption rate changes) using Prophet forecasting models. It proactively notifies you over WhatsApp 2 days before items deplete, letting you restock via a stateful LangGraph agent in one tap. It also features price tracking and recipe-to-cart pantry intelligence.
 
 > **Why this project?**
-> Swiggy Instamart's ultimate switching-cost moat against Blinkit by building a sticky, household-specific intelligence profile.
+> A sticky, household-specific intelligence profile that builds a moat across quick commerce platforms (like Swiggy Instamart, Zepto, and Blinkit).
 
 <br/>
 

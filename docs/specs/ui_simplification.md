@@ -1,6 +1,6 @@
 # Spec: Swiggy Instamart Dashboard Simplification
 
-This document details the visual style and content changes to align the Instamart Intelligence dashboard with a clean, easy-to-understand, non-technical layout matching Swiggy's branding.
+This document details the visual style and content changes to align the PreFill dashboard with a clean, easy-to-understand, non-technical layout.
 
 ## 1. Visual Theme (Swiggy Aesthetic)
 - **Background**: Soft gray/warm white `var(--background)` (`#f7f6f3` or `#faf9f7`).
