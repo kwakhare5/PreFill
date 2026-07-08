@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Instamart Intelligence API",
+    title="PreFill API",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -82,7 +82,7 @@ async def health():
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Instamart Intelligence API"}
+    return {"message": "Welcome to PreFill API"}
 
 
 if __name__ == "__main__":

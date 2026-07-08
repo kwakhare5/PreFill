@@ -47,7 +47,7 @@ async def fetch_and_sync_orders(household_id: str, user_id: str, db: AsyncSessio
     from fastapi import HTTPException
 
     try:
-        data = await mcp_client.get_instamart_orders(user_id, limit=200)
+        data = await mcp_client.get_platform_orders(user_id, limit=200)
     except httpx.TimeoutException:
         raise HTTPException(status_code=503, detail="MCP server timed out. Please try again.")
     except Exception as e:
@@ -57,10 +57,10 @@ async def fetch_and_sync_orders(household_id: str, user_id: str, db: AsyncSessio
     raw_orders = data.get("orders", [])
 
     # Batch check: load all existing order IDs in one query to avoid N+1
-    instamart_ids = [o["order_id"] for o in raw_orders]
-    if instamart_ids:
+    platform_ids = [o["order_id"] for o in raw_orders]
+    if platform_ids:
         existing_result = await db.execute(
-            select(Order.instamart_order_id).where(Order.instamart_order_id.in_(instamart_ids))
+            select(Order.platform_order_id).where(Order.platform_order_id.in_(platform_ids))
         )
         already_synced = {row[0] for row in existing_result.all()}
     else:
@@ -75,7 +75,8 @@ async def fetch_and_sync_orders(household_id: str, user_id: str, db: AsyncSessio
 
         new_order = Order(
             household_id=household_id,
-            instamart_order_id=raw_order["order_id"],
+            platform_order_id=raw_order["order_id"],
+            platform=raw_order.get("platform", "instamart"),
             placed_at=datetime.fromisoformat(raw_order["placed_at"]),
             total_amount=raw_order.get("total"),
             raw_data=raw_order

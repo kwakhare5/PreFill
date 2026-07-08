@@ -5,26 +5,26 @@ _This document is for HUMANS to read. The AI will only read this when explicitly
 ## 1. PROJECT OVERVIEW & BUSINESS LOGIC
 
 ### The Simple Version
-Instamart Intelligence is an AI system that sits on top of Swiggy Instamart and watches how your household consumes groceries over time. It learns your patterns — how fast you go through milk, oil, atta, eggs — and sends you a WhatsApp message before you run out, asking if you want to reorder. One tap and it's done.
+PreFill is an AI system that sits on top of quick commerce platforms (like Swiggy Instamart, Zepto, and Blinkit) and watches how your household consumes groceries over time. It learns your patterns — how fast you go through milk, oil, atta, eggs — and sends you a WhatsApp message before you run out, asking if you want to reorder. One tap and it's done.
 
 It's the difference between a grocery app and a grocery assistant.
 
 ### The Real-World Analogy
-Imagine you had a full-time house manager — someone who lives with you, watches what leaves the kitchen shelf, and automatically handles restocking. Before your cooking oil runs out, they've already placed the Instamart order. Before you plan Sunday biryani, they've already checked what's in the pantry and added the missing ingredients to the cart.
+Imagine you had a full-time house manager — someone who lives with you, watches what leaves the kitchen shelf, and automatically handles restocking. Before your cooking oil runs out, they've already placed the quick commerce order. Before you plan Sunday biryani, they've already checked what's in the pantry and added the missing ingredients to the cart.
 
-That house manager is what this app pretends to be — except it's software that reads your Instamart order history instead of physically watching your shelves.
+That house manager is what this app pretends to be — except it's software that reads your quick commerce order history instead of physically watching your shelves.
 
-### Why Does This Matter for Swiggy?
-**The existential problem:** Swiggy Instamart and Blinkit are identical products. Same 10-minute delivery. Same Amul milk. Same prices. Same interface. A user has zero reason to be loyal to either one — they open whichever app they remember first.
+### Why Does This Matter?
+**The existential problem:** Quick commerce platforms like Swiggy Instamart, Zepto, and Blinkit are identical products. Same 10-minute delivery. Same Amul milk. Same prices. Same interface. A user has zero reason to be loyal to either one — they open whichever app they remember first.
 
-**The solution this project creates:** If Instamart has been learning your household's grocery patterns for 6 months, it knows things Blinkit cannot know:
+**The solution this project creates:** If PreFill has been learning your household's grocery patterns for 6 months, it aggregates knowledge across platforms:
 - Your family uses 1L milk every 2.1 days.
 - You buy 5kg atta every 17 days, not 16 or 18.
 - You always buy eggs and bread together on Sunday mornings.
 - Your oil consumption spikes in October-November (festive season cooking).
 - You were away for 10 days in March (zero orders = travel detected).
 
-If you switch to Blinkit, you lose all of that. You're starting from zero. That intelligence — that knowledge about your household — is the switching cost. That's Swiggy's moat against Blinkit. No other feature creates this kind of lock-in.
+If you switch to using another platform manually, you lose all of that. You're starting from zero. That intelligence — that knowledge about your household — is the switching cost. That's PreFill's moat. No other feature creates this kind of lock-in.
 
 ---
 
@@ -258,7 +258,7 @@ YOUR INSTAMART ORDER HISTORY
 
 ### Project Structure
 ```
-Instamart-Intelligence/
+PreFill/
 ├── backend/
 │   ├── main.py                        # FastAPI entry point — lifespan, CORS, GZip, router registration
 │   ├── config.py                      # Pydantic Settings — DATABASE_URL, MCP_BASE_URL, Twilio, Groq, NVIDIA
@@ -343,8 +343,8 @@ Instamart-Intelligence/
 #### Step 1.1 — Environment Setup
 ```bash
 # 1. Clone and init project
-git clone https://github.com/kwakhare5/Instamart-Intelligence.git
-cd Instamart-Intelligence
+git clone https://github.com/kwakhare5/PreFill.git
+cd PreFill
 python -m venv venv && venv\Scripts\activate  # Windows
 
 # 2. Install Python dependencies

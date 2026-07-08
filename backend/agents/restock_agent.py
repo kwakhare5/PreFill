@@ -7,7 +7,7 @@ Graph nodes:
   2. parse_reply       — Interprets user reply to a stock-check alert (YES/NO/partial)
   3. parse_order_intent — Parses a direct order request (e.g. "2 milk, eggs")
   4. reset_to_order    — Cancels current flow and returns to order prompt
-  5. build_cart        — Searches MCP catalog and builds the Instamart cart
+  5. build_cart        — Searches MCP catalog and builds the PreFill cart
   6. place_order       — Places the order via MCP
 
 State transitions:
@@ -246,7 +246,7 @@ async def generate_alert_message(state: RestockState) -> dict:
     if not message and is_groq_configured():
         try:
             prompt = (
-                f"You are a smart household assistant for Swiggy Instamart.\n\n"
+                f"You are a smart household assistant for PreFill.\n\n"
                 f"Items likely running low:\n{items_text}\n\n"
                 f"Write a WhatsApp message under 150 words. You MUST list all items from the list above, showing for each item:\n"
                 f"- Its whole name\n"
@@ -266,7 +266,7 @@ async def generate_alert_message(state: RestockState) -> dict:
     if not message and is_nvidia_configured():
         try:
             prompt = (
-                f"You are a smart household assistant for Swiggy Instamart.\n\n"
+                f"You are a smart household assistant for PreFill.\n\n"
                 f"Items likely running low:\n{items_text}\n\n"
                 f"Write a WhatsApp message under 150 words. You MUST list all items from the list above, showing for each item:\n"
                 f"- Its whole name\n"
@@ -700,7 +700,7 @@ async def parse_order_intent(state: RestockState) -> dict:
 async def build_cart(state: RestockState) -> dict:
     """
     For each confirmed item, search the MCP catalog to get the current product
-    listing, then add all items to a single Instamart cart.
+    listing, then add all items to a single PreFill cart.
 
     Why search before carting?
       The consumption model tracks item_ids (INS_001), but the cart needs the
@@ -723,7 +723,7 @@ async def build_cart(state: RestockState) -> dict:
         # Search MCP for each confirmed item
         for item in state["confirmed_items"]:
             try:
-                r = await mcp_client.search_instamart_items(item["item_name"])
+                r = await mcp_client.search_platform_items(item["item_name"])
                 results = r.get("items", [])
                 if results:
                     match = None
@@ -753,18 +753,18 @@ async def build_cart(state: RestockState) -> dict:
 
         if not cart_items:
             return {
-                "response_message": "Couldn't find those items right now. Please try ordering directly on Instamart.",
+                "response_message": "Couldn't find those items right now. Please try ordering directly on PreFill.",
                 "stage": "done",
                 "error": "no_items_found",
             }
 
         # Build the cart via MCP
-        cart_data = await mcp_client.update_instamart_cart(cart_items)
+        cart_data = await mcp_client.update_platform_cart(cart_items)
 
     except Exception as e:
         logger.error(f"Cart build failed: {e}")
         return {
-            "response_message": "⚠️ Couldn't build the cart right now. Please try directly on Instamart.",
+            "response_message": "⚠️ Couldn't build the cart right now. Please try directly on PreFill.",
             "stage": "done",
             "error": str(e),
         }
@@ -808,7 +808,7 @@ async def build_cart(state: RestockState) -> dict:
 # ---------------------------------------------------------------------------
 async def place_order(state: RestockState) -> dict:
     """
-    Final step: call Instamart MCP to place the order.
+    Final step: call PreFill MCP to place the order.
     On success, returns order ID and ETA for the WhatsApp confirmation.
     """
     try:
@@ -819,19 +819,20 @@ async def place_order(state: RestockState) -> dict:
                 "stage": "done",
                 "error": "missing_cart_id",
             }
-        data = await mcp_client.place_instamart_order(cart_id)
+        data = await mcp_client.place_platform_order(cart_id)
 
         if data.get("success"):
             order_id = data["order_id"]
             eta = data.get("estimated_delivery_minutes", 15)
+            platform = data.get("platform", "quick commerce provider")
             return {
                 "order_id": order_id,
-                "response_message": f"✅ Order placed! Arriving in ~{eta} mins. Order #{order_id}",
+                "response_message": f"✅ Order placed on {platform.title()}! Arriving in ~{eta} mins. Order #{order_id}",
                 "stage": "done",
             }
         else:
             return {
-                "response_message": "⚠️ Couldn't place order. Please try directly on Instamart.",
+                "response_message": "⚠️ Couldn't place order. Please try directly on the app.",
                 "stage": "done",
                 "error": "order_placement_failed",
             }
@@ -839,7 +840,7 @@ async def place_order(state: RestockState) -> dict:
     except Exception as e:
         logger.error(f"Order placement failed: {e}")
         return {
-            "response_message": "⚠️ Couldn't place order. Please try directly on Instamart.",
+            "response_message": "⚠️ Couldn't place order. Please try directly on the app.",
             "stage": "done",
             "error": str(e),
         }

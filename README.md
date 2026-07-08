@@ -1,11 +1,11 @@
 <!-- ╔══════════════════════════════════════════════════════════════════╗
-     ║          Instamart Intelligence — README                        ║
+     ║          PreFill — README                                        ║
      ║          The household AI that knows your kitchen better...     ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
 
-  # Instamart Intelligence
+  # PreFill
 
   ### *The household AI that knows your kitchen better than you do.*
 
@@ -13,8 +13,8 @@
 
   ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
   ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
-  ![Last Commit](https://img.shields.io/github/last-commit/kwakhare5/Instamart-Intelligence?style=for-the-badge&color=orange)
-  ![Stars](https://img.shields.io/github/stars/kwakhare5/Instamart-Intelligence?style=for-the-badge&color=yellow)
+  ![Last Commit](https://img.shields.io/github/last-commit/kwakhare5/PreFill?style=for-the-badge&color=orange)
+  ![Stars](https://img.shields.io/github/stars/kwakhare5/PreFill?style=for-the-badge&color=yellow)
   ![Language](https://img.shields.io/badge/Language-Python%20%2F%20TypeScript-yellow?style=for-the-badge&logo=python&logoColor=white)
 
   <br/>
@@ -107,7 +107,7 @@ flowchart LR
 ## 📁 Project Structure
 
 ```
-Instamart-Intelligence/
+PreFill/
 │
 ├── docker-compose.yml              # Orchestrates the PostgreSQL with TimescaleDB container
 ├── pyrightconfig.json              # Configures local Python virtual environment for development tools
@@ -191,8 +191,8 @@ To keep the application highly responsive, low-latency, and production-ready, se
 ### Step 1 — Clone
 
 ```bash
-git clone https://github.com/kwakhare5/Instamart-Intelligence.git
-cd Instamart-Intelligence
+git clone https://github.com/kwakhare5/PreFill.git
+cd PreFill
 ```
 
 ### Step 2 — Seed Precision Data

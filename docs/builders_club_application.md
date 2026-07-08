@@ -2,16 +2,16 @@
 
 **To:** Swiggy Builders Club Selection Committee  
 **From:** Karan Wakhare  
-**Subject:** Instamart Intelligence — The Household AI That Builds Swiggy's Structural Moat Against Blinkit  
+**Subject:** PreFill — The Household AI That Builds a Moat Across Q-Commerce  
 **Contact:** kwakhare5@gmail.com  
-**GitHub:** https://github.com/kwakhare5/Instamart-Intelligence  
+**GitHub:** https://github.com/kwakhare5/PreFill  
 **Date:** June 2026
 
 ---
 
 ## 1. Who I Am
 
-I am **Karan Wakhare**, an individual full-stack engineer with a strong focus on AI systems, time-series ML, and agentic product design. I have built Instamart Intelligence end-to-end as an independent prototype — from the PostgreSQL/TimescaleDB schema design to the Facebook Prophet forecasting models, the LangGraph multi-turn WhatsApp agent, and the Next.js 15 dashboard.
+I am **Karan Wakhare**, an individual full-stack engineer with a strong focus on AI systems, time-series ML, and agentic product design. I have built PreFill end-to-end as an independent prototype — from the PostgreSQL/TimescaleDB schema design to the Facebook Prophet forecasting models, the LangGraph multi-turn WhatsApp agent, and the Next.js 15 dashboard.
 
 | Field | Details |
 |---|---|
@@ -21,7 +21,7 @@ I am **Karan Wakhare**, an individual full-stack engineer with a strong focus on
 | **GitHub** | [@kwakhare5](https://github.com/kwakhare5) |
 | **LinkedIn** | [karanwakhare](https://www.linkedin.com/in/karanwakhare) |
 | **Twitter / X** | [@kwakhare5](https://x.com/kwakhare5) |
-| **Project Repo** | [Instamart-Intelligence](https://github.com/kwakhare5/Instamart-Intelligence) |
+| **Project Repo** | [PreFill](https://github.com/kwakhare5/PreFill) |
 | **Type** | Individual Developer |
 
 ---
@@ -155,8 +155,8 @@ This is a **prototype / sandbox submission** — no OAuth redirect flows are act
 | Environment | Redirect URI |
 |---|---|
 | **Development (Sandbox)** | `http://localhost:8000/auth/callback` |
-| **Staging** | `https://instamart-intelligence-staging.vercel.app/auth/callback` |
-| **Production** | `https://instamart-intelligence.vercel.app/auth/callback` |
+| **Staging** | `https://prefill-staging.vercel.app/auth/callback` |
+| **Production** | `https://prefill.vercel.app/auth/callback` |
 
 OAuth tokens and Swiggy MCP credentials will be stored securely via environment variables (never in source code) and rotated on a 90-day schedule.
 
@@ -353,9 +353,9 @@ This is a solo prototype submission. I do not hold SOC 2 or ISO 27001 certificat
 
 ## Call to Action
 
-Instamart Intelligence is a **fully functional, end-to-end localhost prototype** with 16/16 passing backend tests, a clean Next.js 15 production build, and a live WhatsApp sandbox chat simulator that demonstrates the complete restock conversation flow without requiring a real phone.
+PreFill is a **fully functional, end-to-end localhost prototype** with 16/16 passing backend tests, a clean Next.js 15 production build, and a live WhatsApp sandbox chat simulator that demonstrates the complete restock conversation flow without requiring a real phone.
 
-**GitHub Repository:** https://github.com/kwakhare5/Instamart-Intelligence
+**GitHub Repository:** https://github.com/kwakhare5/PreFill
 
 I am requesting sandbox API access to connect to real Swiggy Instamart MCP endpoints and test this intelligence layer on a small opt-in cohort of households. I would love to pitch this directly to the Instamart product team.
 

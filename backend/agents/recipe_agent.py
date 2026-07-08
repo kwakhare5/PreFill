@@ -1,7 +1,7 @@
 """
 Recipe Suggestion Agent — Task 4.1 & 4.2
 Stateful one-shot agent for parsing recipes, evaluating estimated pantry states,
-detecting missing items, and preparing a Swiggy Instamart checkout cart.
+detecting missing items, and preparing a PreFill checkout cart.
 """
 
 import json
@@ -273,14 +273,14 @@ async def identify_missing_node(state: RecipeState) -> RecipeState:
 
 
 async def search_items_node(state: RecipeState) -> RecipeState:
-    """Searches the Instamart catalog for each missing item to find standard products and prices."""
+    """Searches the PreFill catalog for each missing item to find standard products and prices."""
     missing_items = state["missing_items"]
     cart_items = []
     estimated_cost = 0.0
 
     for item in missing_items:
         try:
-            res = await mcp_client.search_instamart_items(item["name"])
+            res = await mcp_client.search_platform_items(item["name"])
             catalog_items = res.get("items", [])
             if catalog_items:
                 best_match = catalog_items[0]
@@ -316,7 +316,7 @@ async def search_items_node(state: RecipeState) -> RecipeState:
 
 
 async def build_cart_node(state: RecipeState) -> RecipeState:
-    """Calls Instamart MCP update cart endpoint to populate the checkout basket."""
+    """Calls PreFill MCP update cart endpoint to populate the checkout basket."""
     cart_items = state["cart_items"]
     if not cart_items:
         state["cart_id"] = None
@@ -327,7 +327,7 @@ async def build_cart_node(state: RecipeState) -> RecipeState:
             {"item_id": item["item_id"], "quantity": item["quantity"]}
             for item in cart_items
         ]
-        res = await mcp_client.update_instamart_cart(items_payload)
+        res = await mcp_client.update_platform_cart(items_payload)
         if res.get("success"):
             state["cart_id"] = res.get("cart_id")
             # Update estimated cost with official cart total if available
@@ -336,7 +336,7 @@ async def build_cart_node(state: RecipeState) -> RecipeState:
         else:
             state["cart_id"] = None
     except Exception as e:
-        logger.error(f"Failed to populate Swiggy cart: {e}")
+        logger.error(f"Failed to populate PreFill cart: {e}")
         state["cart_id"] = None
 
     return state

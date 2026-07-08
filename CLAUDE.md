@@ -1,6 +1,6 @@
-﻿# Instamart Intelligence — CLAUDE.md
+# PreFill — CLAUDE.md
 # Global rules: C:\Users\kwakh\.gemini\config\AGENTS.md (read this first)
-# Brain file: D:\workflow-main\brain\Projects\Instamart-Intelligence.md (full context)
+# Brain file: D:\workflow-main\brain\Projects\PreFill.md (full context)
 
 ---
 
