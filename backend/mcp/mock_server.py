@@ -6,6 +6,7 @@ import json
 import os
 import uuid
 import random
+import asyncio
 from backend.seed.catalog import CATALOG as MOCK_CATALOG
 
 # In-memory store for mock orders — loaded from seed data file
@@ -138,8 +139,11 @@ async def place_order(body: PlaceOrder):
     # Persist the orders list to the JSON seed file to sync permanently
     try:
         seed_file = os.path.join(os.path.dirname(__file__), "..", "seed", "generated_orders.json")
-        with open(seed_file, "w") as f:
-            json.dump(MOCK_ORDERS, f, indent=2)
+        def write_seed():
+            with open(seed_file, "w") as f:
+                json.dump(MOCK_ORDERS, f, indent=2)
+        
+        await asyncio.to_thread(write_seed)
         print(f"Mock server appended new order {order_id} and updated generated_orders.json")
     except Exception as e:
         print(f"Mock server failed to write generated_orders.json: {e}")
@@ -168,8 +172,11 @@ async def reload_mock_orders():
     seed_file = os.path.join(os.path.dirname(__file__), "..", "seed", "generated_orders.json")
     if os.path.exists(seed_file):
         try:
-            with open(seed_file) as f:
-                MOCK_ORDERS = json.load(f)
+            def read_seed():
+                with open(seed_file) as f:
+                    return json.load(f)
+            
+            MOCK_ORDERS = await asyncio.to_thread(read_seed)
             print(f"Mock server reloaded {len(MOCK_ORDERS)} orders")
             return {"success": True, "loaded_orders": len(MOCK_ORDERS)}
         except Exception as e:

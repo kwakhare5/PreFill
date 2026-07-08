@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean, Text, ForeignKey
+from sqlalchemy import Column, String, Float, Integer, DateTime, Boolean, Text, ForeignKey, UniqueConstraint, Index
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import DeclarativeBase, relationship
 import uuid
@@ -21,6 +21,9 @@ class Household(Base):
 
 class Order(Base):
     __tablename__ = "orders"
+    __table_args__ = (
+        Index('ix_orders_household_placed_at', 'household_id', 'placed_at'),
+    )
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"), index=True)
     platform_order_id = Column(String(255), unique=True)
@@ -46,6 +49,9 @@ class OrderItem(Base):
 
 class ConsumptionModel(Base):
     __tablename__ = "consumption_models"
+    __table_args__ = (
+        UniqueConstraint('household_id', 'item_id', name='uq_consumption_model_household_item'),
+    )
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     household_id = Column(UUID(as_uuid=True), ForeignKey("households.id"), index=True)
     item_id = Column(String(255))

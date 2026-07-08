@@ -40,6 +40,9 @@ original_create_async_engine = sqlalchemy.ext.asyncio.create_async_engine
 
 def mock_create_async_engine(*args, **kwargs):
     kwargs["poolclass"] = StaticPool
+    kwargs.pop("pool_size", None)
+    kwargs.pop("max_overflow", None)
+    kwargs.pop("pool_pre_ping", None)
     return original_create_async_engine(*args, **kwargs)
 
 sqlalchemy.ext.asyncio.create_async_engine = mock_create_async_engine
@@ -113,6 +116,59 @@ async def mock_get_checkpointer():
 
 import backend.database.connection
 backend.database.connection.get_checkpointer = mock_get_checkpointer  # type: ignore
+
+# Mock LLM Client to avoid actual network calls
+from langchain_core.messages import AIMessage
+import json
+
+class MockLLM:
+    def with_structured_output(self, schema):
+        self._schema = schema
+        return self
+        
+    def with_config(self, config):
+        return self
+        
+    async def ainvoke(self, messages, *args, **kwargs):
+        # Determine behavior based on the prompt content
+        content = ""
+        if messages and len(messages) > 0:
+            prompt = messages[0].content.lower()
+            if "recipe" in prompt:
+                # Return dummy recipe ingredients
+                if hasattr(self, '_schema'):
+                    # Using Pydantic structured output
+                    return self._schema(ingredients=[
+                        {"name": "mock ingredient 1", "quantity": 1.0, "unit": "kg"},
+                        {"name": "mock ingredient 2", "quantity": 500, "unit": "g"}
+                    ])
+                else:
+                    content = json.dumps([
+                        {"name": "mock ingredient 1", "quantity": 1.0, "unit": "kg"},
+                        {"name": "mock ingredient 2", "quantity": 500, "unit": "g"}
+                    ])
+            elif "analyze their reply" in prompt:
+                # Mock restock agent parsing
+                content = json.dumps({"wanted": [], "unrecognized": False})
+            elif "extract" in prompt and "order" in prompt:
+                # Mock order intent parsing
+                content = json.dumps({"items": [], "not_an_order": False})
+            else:
+                content = "Mocked LLM response"
+                
+        return AIMessage(content=content)
+
+def mock_get_llm():
+    return MockLLM()
+
+import backend.agents.llm_client
+import backend.agents.restock_agent
+import backend.agents.recipe_agent
+
+backend.agents.llm_client.get_llm = mock_get_llm
+backend.agents.restock_agent.get_llm = mock_get_llm
+backend.agents.recipe_agent.get_llm = mock_get_llm
+
 
 from backend.database.connection import engine, init_db
 

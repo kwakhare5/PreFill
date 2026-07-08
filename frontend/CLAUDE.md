@@ -8,7 +8,7 @@
 ## 1. PROJECT IDENTITY
 
 **Name:** PreFill — Frontend
-**Parent project:** D:\Instamart Intelligence\
+**Parent project:** D:\PreFill\
 **Goal:** Next.js frontend for the PreFill grocery intelligence platform
 
 **AI POINTER:** Full project context (DB schema, API, backend logic) is in the PARENT directory:

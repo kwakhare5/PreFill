@@ -12,6 +12,8 @@ from backend.api.routes import household, predictions, restock, recipes, prices,
 from backend.notifications import whatsapp
 from backend.database.connection import init_db
 from backend.notifications.scheduler import start_scheduler, stop_scheduler
+from backend.mcp.client import mcp_client
+from backend.config import settings
 import uvicorn
 
 
@@ -38,8 +40,10 @@ async def lifespan(app: FastAPI):
         import logging
         logging.getLogger(__name__).warning(f"Could not connect DB to run checkpointer setup (DB likely offline): {e}")
 
+    await mcp_client.startup()
     start_scheduler()
     yield
+    await mcp_client.shutdown()
     stop_scheduler()
 
 
@@ -56,7 +60,7 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -86,4 +90,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
