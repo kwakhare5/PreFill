@@ -1,6 +1,6 @@
 ﻿# PreFill — CLAUDE.md
 # Global rules: C:\Users\kwakh\.gemini\config\AGENTS.md (read this first)
-# Brain file: D:\workflow-main\brain\Projects\PreFill.md (full context)
+# Project wiki: D:\workflow-main\02_Obsidian_Brain\wiki\Projects\PreFill.md
 
 ---
 
