@@ -103,7 +103,7 @@ _User triggers these explicitly. AI does not suggest them unprompted._
 | `@GRILL` | Stress-test a code project plan and build a domain model. | `grill-with-docs` |
 | `@GRILL-ME` | Interview me about a non-code plan or design. | `grill-me` |
 | `@TO-ISSUES` | Break an agreed-upon plan/PRD into tracer-bullet tickets (supports local files, GitHub, Linear). | `to-tickets` |
-| `@TO-PRD` | Turn our conversation into a PRD and publish it. | `to-prd` |
+| `@TO-SPEC` | Turn our conversation into a spec and publish it. | `to-spec` |
 | `@TDD` | Red-Green-Refactor to build a feature or fix a bug. | `tdd` |
 | `@DIAGNOSE` | Something broken — rigorous bug diagnosis loop. | `diagnosing-bugs` |
 | `@ARCHITECTURE-REVIEW` | Scan codebase for deepening opportunities (refactoring). | `improve-codebase-architecture` |
